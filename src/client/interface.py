@@ -4,7 +4,7 @@ Created on Tue Jan  7 10:06:41 2020
 
 @author: catam
 """
-from tkinter import Label, Button, Frame, BOTH, Canvas
+from tkinter import Label, Button, Frame, BOTH, Canvas, Tk
 from PIL import Image, ImageTk  
 
 class Interface(Frame):
@@ -15,7 +15,7 @@ class Interface(Frame):
     def __init__(self, fenetre, connexion):
         
         Frame.__init__(self, fenetre)
-        self.pack(fill=BOTH)        
+        self.pack(expand = True, fill=BOTH)        
         
         self.connexion = connexion
 #         Création de nos widgets
@@ -26,9 +26,9 @@ class Interface(Frame):
                                 command=self.aquisition_command, bg = 'red')
         self.aquisition_button.pack(side="bottom")
         
-        self.load_button = Button(self, text="load", padx=5, pady=15, 
+        self.load_button = Button(self, text="Load", padx=26, pady=15, 
                                 command=self.chargerImage, bg = 'green')
-        self.load_button.pack(side="right")
+        self.load_button.pack(side="bottom")
         
         self.dicimg = {}
         self.size = (320, 240)
@@ -38,12 +38,11 @@ class Interface(Frame):
         
         
     def chargerImage(self): 
-        im=Image.open("ENSTAVENGERS.png") 
-        photo = ImageTk.PhotoImage(im) 
-        photo = photo.resize(self.size) 
+        img=Image.open("ENSTAVENGERS.png") 
+        img = img.resize((self.size[0], self.size[1]))
+        photo = ImageTk.PhotoImage(img) 
         self.dicimg['img1'] = photo        
-        item = self.cadre.create_image(self.size[0],self.size[1],image =photo) 
-        print("charger image")
+        item = self.cadre.create_image(self.size[0]//2,self.size[1]//2,image=photo) 
         
     
     def aquisition_command(self):
@@ -64,12 +63,12 @@ class Interface(Frame):
         
 if __name__ == "__main__":
     fenetre = Tk()
-    fenetre.geometry("600x500+300+100")
+    fenetre.geometry("600x400+300+100")
     
     interface = Interface(fenetre, None)
     
     interface.mainloop()
-    interface.destroy()      
+    # interface.destroy()      
         
 #            img = ImageTk.PhotoImage(file="ENSTAVENGERS.png")
 #        label = Label(self, image=img)
