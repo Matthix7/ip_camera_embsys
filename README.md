@@ -38,7 +38,6 @@ Puis la mettre sur la carte sd avec la commande dd. Enfin ajouter ou remplacer l
 ## Guide utilisateur
 L'interface pour la visualisation du champ de vision de la caméra et la sauvegarde des images est codée sous *Python* et utilise les librairies *Tkinter* et *Pillow*. L'utilisation de cette interface requiert donc l'installation de ces librairies:
 ```
-apt install python3-tk
-apt install python3-imaging-tk
-apt install python3-pil python3-pil.imagetk
+sudo apt install python3-tk
+sudo apt install python3-pil python3-pil.imagetk
 ```
