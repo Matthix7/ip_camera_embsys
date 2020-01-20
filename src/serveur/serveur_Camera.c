@@ -75,6 +75,14 @@ void signals_handler(int signal_number)
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 
+int photo(0)
+{
+	return 1
+}
+
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
 
 
 void app(){
@@ -164,12 +172,9 @@ void app(){
 				{
 					printf("newMessage \n");
 					int rep = 1;
-					int demande = 0;
-					recv(sockCom, &demande, sizeof(int),0);
-					send(sockCom, &rep, sizeof(int),0);
-					
-					printf("%d \n",demande);
-					
+					char demande = 0;
+					recv(sockCom, &demande, sizeof(char),0);
+					send(sockCom, &rep, sizeof(int),0);					
 					if (demande == 0)
 					{
 						printf(" Client disconnected \n");
@@ -177,9 +182,9 @@ void app(){
 						Client = 0;
 					}
 					
-					if (demande == 1)
+					if (demande == '1')
 					{
-						printf("demande 1");
+						int img = photo();
 					}
 					
 			}
