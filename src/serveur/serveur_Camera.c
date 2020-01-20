@@ -104,8 +104,8 @@ int sendPhoto(SOCKET sockCom, fd_set fd)
             
         } 
         fclose(fjpg);  
-        int end = 0;
-        send(sockCom, &end, sizeof(int),0);
+        char * end = 'end';
+        send(sockCom, &end, sizeof(end),0);
         int test = 0;
         while (test == 0)
         {
