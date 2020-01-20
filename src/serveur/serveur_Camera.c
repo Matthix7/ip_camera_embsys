@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <jpeglib.h>
+#include <jerror.h>
 #include <errno.h>
 #include <string.h>
 #include <signal.h>
@@ -78,18 +79,47 @@ void signals_handler(int signal_number)
 
 int photo()
 {
-	return 1
+	return 1;
 }
 
 
-int sendPhoto()
+int sendPhoto(SOCKET sockCom, fd_set fd)
 {
-	int height = 720;
-	int weight = 1280;
-	FILE* image = NULL;
-	image = fopen("image.jpg")
-
-	return 1;
+	char byte;
+	char rep;
+    FILE *fjpg = fopen("image.jpg","rb");
+    if (fjpg!=NULL) {
+        while (feof(fjpg) == 0)
+        {
+            fread (&byte, sizeof(char),1, fjpg);
+            send(sockCom, &byte, sizeof(char),0);
+            int test = 0;
+            while (test == 0){
+            	if(FD_ISSET(sockCom, &fd))
+				{	
+            		recv(sockCom, &rep, sizeof(char),0);
+            		test = 1;
+            	}
+            }	
+            
+        } 
+        fclose(fjpg);  
+        int end = 0;
+        send(sockCom, &end, sizeof(int),0);
+        int test = 0;
+        while (test == 0)
+        {
+	        if(FD_ISSET(sockCom, &fd))
+			{	
+	    		recv(sockCom, &rep, sizeof(char),0);
+	    		test = 1;
+	    	}
+	   	}
+    	printf("end transfert \n");
+    } else {
+        printf("Erreur ouverture\n");
+    }
+    return 0;
 }
 
 
@@ -113,8 +143,10 @@ void app(){
 	size_t sinsize = sizeof csin;
 	
 	
-	sockCom = accept(socketConnexion, (SOCKADDR *)&csin, &sinsize);
-	if(sockCom == SOCKET_ERROR)
+	//sockCom = accept(socketConnexion, (SOCKADDR *)&csin, &sinsize);
+	
+
+	/*if(sockCom == SOCKET_ERROR)
 	{
 		perror("accept()");
 	}
@@ -123,7 +155,7 @@ void app(){
 		printf("Connexion OK\n");
 		Client = 1;
 		
-	}
+	}*/
 	
 	fd_set fd;
 	int max = socketConnexion;
@@ -184,11 +216,13 @@ void app(){
 			
 			if(FD_ISSET(sockCom, &fd))
 			{
+				
 				printf("newMessage \n");
 				char demande = 0;
 				recv(sockCom, &demande, sizeof(char),0);
 
-				printf(" demande : %d\n", demande);
+				printf(" demande : %d \n", demande == 49);
+
 
 				if (demande == NULL)
 				{
@@ -199,8 +233,11 @@ void app(){
 				
 				if (demande == '1')
 				{
-					int img = photo();
-					//send(sockCom, &rep, sizeof(int),0);		
+					char rep = '1';
+					printf("transfert begins\n");
+					send(sockCom, &rep, sizeof(char),0);	
+					sendPhoto(sockCom,fd);
+						
 				}
 					
 			}
