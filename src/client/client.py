@@ -15,6 +15,7 @@ from time import time
 from tkinter import *
 from interface import Interface
 
+
 import sys
 
 if __name__ == "__main__":
@@ -46,13 +47,5 @@ if __name__ == "__main__":
             interface.destroy()
         except:
             pass
-
-
-
-
-
-
-
-
 
 

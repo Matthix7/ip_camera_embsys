@@ -65,7 +65,7 @@ void signals_handler(int signal_number)
     if (Client == 1)
     {
 		int rep = 2;
-		send(sockCom, &rep, sizeof(int),0);
+		send(sockCom, &rep, sizeof(int),0); // si le serveur est interrompu on previent le client
 		end_connection(sockCom);
 	}
 	end_connection(socketConnexion);
@@ -75,6 +75,14 @@ void signals_handler(int signal_number)
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 
+int photo()
+{
+	return 1;
+}
+
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
 
 
 void app(){
@@ -129,9 +137,10 @@ void app(){
 		if (select(max+1, &fd, NULL,NULL, &tv) == -1)
 		{
 			exit(errno);
-		}
 		
-			
+		}
+
+
 		if (FD_ISSET(socketConnexion,&fd))
 		{
 			int rep = 0;
@@ -157,35 +166,36 @@ void app(){
 			
 			
 		}
+
 		if (Client == 1) 
 		{
 			
 			if(FD_ISSET(sockCom, &fd))
+			{
+				printf("newMessage \n");
+				int rep = 1;
+				char demande = 0;
+				recv(sockCom, &demande, sizeof(char),0);
+				//send(sockCom, &rep, sizeof(int),0);		
+
+
+				printf(" demande : %d\n", demande);
+
+				if (demande == NULL)
 				{
-					printf("newMessage \n");
-					int rep = 1;
-					int demande = 0;
-					recv(sockCom, &demande, sizeof(int),0);
-					send(sockCom, &rep, sizeof(int),0);
-					
-					printf("%d \n",demande);
-					
-					if (demande == 0)
-					{
-						printf(" Client disconnected \n");
-						end_connection(sockCom);
-						Client = 0;
-					}
-					
-					if (demande == 1)
-					{
-						printf("demande 1");
-					}
+					printf(" Client disconnected \n");
+					end_connection(sockCom);
+					Client = 0;
+				}
+				
+				if (demande == '1')
+				{
+					int img = photo();
+					send(sockCom, &rep, sizeof(int),0);		
+				}
 					
 			}
-		}
-		
-		
+		}	
 		
 	}
 	
