@@ -29,23 +29,28 @@ if __name__ == "__main__":
         
         connexion_avec_serveur = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         connexion_avec_serveur.connect((hote, port))
-        print("Connexion établie avec le serveur sur le port {}".format(port))
+        
+        msg_recu = connexion_avec_serveur.recv(1024).decode()
         
         
-        # Interface graphique
-        fenetre = Tk()
-        fenetre.geometry("600x500+300+100")
-        interface = Interface(fenetre, connexion_avec_serveur)
-        interface.mainloop()
+        if msg_recu != "1":
+            print("Le serveur a refusé la connexion: déjà occupé.")
+        else:
+            print("Connexion établie avec le serveur sur le port {}".format(port))
         
-        
-        
-        print("Fermeture de la connexion")
-        connexion_avec_serveur.close()
-        
-        try:
-            interface.destroy()
-        except:
-            pass
+            # Interface graphique
+            fenetre = Tk()
+            fenetre.geometry("600x500+300+100")
+            interface = Interface(fenetre, connexion_avec_serveur)
+            interface.mainloop()
+            
+            
+            print("Fermeture de la connexion")
+            connexion_avec_serveur.close()
+            
+            try:
+                interface.destroy()
+            except:
+                pass
 
 
