@@ -65,7 +65,7 @@ void signals_handler(int signal_number)
     if (Client == 1)
     {
 		int rep = 2;
-		send(sockCom, &rep, sizeof(int),0);
+		send(sockCom, &rep, sizeof(int),0); // si le serveur est interrompu on previent le client
 		end_connection(sockCom);
 	}
 	end_connection(socketConnexion);
@@ -75,9 +75,9 @@ void signals_handler(int signal_number)
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 
-int photo(0)
+int photo()
 {
-	return 1
+	return 1;
 }
 
 
@@ -174,7 +174,10 @@ void app(){
 					int rep = 1;
 					char demande = 0;
 					recv(sockCom, &demande, sizeof(char),0);
-					send(sockCom, &rep, sizeof(int),0);					
+					send(sockCom, &rep, sizeof(int),0);		
+
+					printf("%d\n", demande);
+
 					if (demande == 0)
 					{
 						printf(" Client disconnected \n");
