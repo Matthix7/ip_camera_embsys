@@ -15,7 +15,7 @@ from time import time
 from tkinter import *
 from interface import Interface
 
-hote = "192.168.9.198"
+hote = "192.168.8.51"
 port = 12800
 
 connexion_avec_serveur = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
