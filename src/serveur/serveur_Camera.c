@@ -143,7 +143,7 @@ void app(){
 
 		if (FD_ISSET(socketConnexion,&fd))
 		{
-			int rep = 0;
+			char rep = '0';
 			SOCKET sockComTest = accept(socketConnexion, (SOCKADDR *)&csin, &sinsize);
 			printf(" New connection \n");
 			//Si un client n'est pas present on l'accepte (rep 1) sinon 
@@ -151,15 +151,15 @@ void app(){
 			if (Client == 0)
 			{
 				printf("New Client \n");
-				rep = 1;
-				send(sockComTest, &rep, sizeof(int),0);
+				rep = '1';
+				send(sockComTest, &rep, sizeof(char),0);
 				Client =1;
 				sockCom = sockComTest;
 			}
 			else 
 			{
 				printf("Client refused \n");
-				send(sockComTest, &rep, sizeof(int),0);
+				send(sockComTest, &rep, sizeof(char),0);
 				end_connection(sockComTest);
 			}
 			
@@ -173,11 +173,8 @@ void app(){
 			if(FD_ISSET(sockCom, &fd))
 			{
 				printf("newMessage \n");
-				int rep = 1;
 				char demande = 0;
 				recv(sockCom, &demande, sizeof(char),0);
-				//send(sockCom, &rep, sizeof(int),0);		
-
 
 				printf(" demande : %d\n", demande);
 
@@ -191,7 +188,7 @@ void app(){
 				if (demande == '1')
 				{
 					int img = photo();
-					send(sockCom, &rep, sizeof(int),0);		
+					//send(sockCom, &rep, sizeof(int),0);		
 				}
 					
 			}
