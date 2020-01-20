@@ -1,6 +1,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <jpeglib.h>
 #include <errno.h>
 #include <string.h>
 #include <signal.h>
@@ -77,6 +78,17 @@ void signals_handler(int signal_number)
 
 int photo()
 {
+	return 1
+}
+
+
+int sendPhoto()
+{
+	int height = 720;
+	int weight = 1280;
+	FILE* image = NULL;
+	image = fopen("image.jpg")
+
 	return 1;
 }
 
