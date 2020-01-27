@@ -37,7 +37,12 @@ Puis la mettre sur la carte sd avec la commande dd. Enfin ajouter ou remplacer l
 
 Le readme associé se trouve [ici](compilation/readme.md)
 
+
+
+
 ## Guide utilisateur
+Le readme associé se trouve [ici](src/README.md)  
+
 L'interface pour la visualisation du champ de vision de la caméra et la sauvegarde des images est codée sous *Python3* et utilise les librairies *Tkinter* et *Pillow*. L'utilisation de cette interface requiert donc l'installation de ces librairies:
 ```
 sudo apt install python3-tk
