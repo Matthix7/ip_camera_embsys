@@ -22,9 +22,17 @@ La commande finale est donc ``./configure --host=arm-linux``
 Commenter la ligne ``#undef malloc`` dans config.h.in
 
 Taper la ligne de commande ``make clean`` pour supprimer l'ancien début de configuration
-Relancer le ``./configure --host=arm-linux``.
+Relancer le ``./configure --host=arm-linux``
 Faire un make : la compilation s'effectue sans accros.
 
-### Compilation de serveur.c
+### Compilation de serveur_Camera.c
 
-arm-linux-gcc 
+On ajoute la compilation du code ``serveur_Camera.c`` dans le fichier Makefile.am comme suit :
+
+```
+AUTOMAKE_OPTIONS = dist-bzip2 no-dist-gzip foreign
+bin_PROGRAMS = v4l2grab serveur_Camera
+v4l2grab_SOURCES = v4l2grab.c yuv.c
+camera_Serveur_SOURCES = serveur_Camera.c
+ac_v4l2grab_LIBS="-L/home/user/v4l2grad-master -lv4l2grab"
+```
