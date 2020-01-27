@@ -170,7 +170,7 @@ void signals_handler(int signal_number)
 int photo()
 {	
 	
-	system("./v4l2grab -o image.jpg");
+	system("./v4l2grab -o image.jpeg");
 	return 1;
 }
 
@@ -178,7 +178,7 @@ int sendPhoto(SOCKET sockCom, fd_set fd)
 {
 	char byte;
 	char rep;
-    FILE *fjpg = fopen("image.jpg","rb");
+    FILE *fjpg = fopen("image.jpeg","rb");
     int taille = 0;
     if (fjpg!=NULL) {
         while (feof(fjpg) == 0)
