@@ -16,6 +16,11 @@ typedef struct in_addr IN_ADDR;
 
 #define PORT  12800
 
+#define IN  0
+#define OUT 1
 
+#define LOW  0
+#define HIGH 1
+#define PIN  24 /* P1-18 */
 
 #define BUF_SIZE	1024

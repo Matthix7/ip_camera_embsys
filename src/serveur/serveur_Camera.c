@@ -1,11 +1,13 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <jpeglib.h>
-#include <jerror.h>
 #include <errno.h>
 #include <string.h>
 #include <signal.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <fcntl.h>
 
 #include "serveur_Camera.h"
 
@@ -18,7 +20,95 @@ SOCKET socketConnexion = -1;
 SOCKET sockCom = -1;
 int Client = 0;
 
+////////////////////////////////////////////////////////////////////////
+///////////////////Fonction led /////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
 
+static int GPIOExport(int pin)
+{
+#define BUFFER_MAX 3
+	char buffer[BUFFER_MAX];
+	ssize_t bytes_written;
+	int fd;
+
+	fd = open("/sys/class/gpio/export", O_WRONLY);
+	if (-1 == fd) {
+		fprintf(stderr, "Failed to open export for writing!\n");
+		return(-1);
+	}
+
+	bytes_written = snprintf(buffer, BUFFER_MAX, "%d", pin);
+	write(fd, buffer, bytes_written);
+	close(fd);
+	return(0);
+}
+
+static int GPIODirection(int pin, int dir)
+{
+	static const char s_directions_str[]  = "in\0out";
+
+	#define DIRECTION_MAX 35
+	char path[DIRECTION_MAX];
+	int fd;
+
+	snprintf(path, DIRECTION_MAX, "/sys/class/gpio/gpio%d/direction", pin);
+	fd = open(path, O_WRONLY);
+	if (-1 == fd) {
+		fprintf(stderr, "Failed to open gpio direction for writing!\n");
+		return(-1);
+	}
+
+	if (-1 == write(fd, &s_directions_str[IN == dir ? 0 : 3], IN == dir ? 2 : 3)) {
+		fprintf(stderr, "Failed to set direction!\n");
+		return(-1);
+	}
+
+	close(fd);
+	return(0);
+}
+
+
+static int GPIOWrite(int pin, int value)
+{	
+	#define VALUE_MAX 30
+	static const char s_values_str[] = "01";
+
+	char path[VALUE_MAX];
+	int fd;
+
+	snprintf(path, VALUE_MAX, "/sys/class/gpio/gpio%d/value", pin);
+	fd = open(path, O_WRONLY);
+	if (-1 == fd) {
+		fprintf(stderr, "Failed to open gpio value for writing!\n");
+		return(-1);
+	}
+
+	if (1 != write(fd, &s_values_str[LOW == value ? 0 : 1], 1)) {
+		fprintf(stderr, "Failed to write value!\n");
+		return(-1);
+	}
+
+	close(fd);
+	return(0);
+}
+
+static int GPIOUnexport(int pin)
+{
+	char buffer[BUFFER_MAX];
+	ssize_t bytes_written;
+	int fd;
+
+	fd = open("/sys/class/gpio/unexport", O_WRONLY);
+	if (-1 == fd) {
+		fprintf(stderr, "Failed to open unexport for writing!\n");
+		return(-1);
+	}
+
+	bytes_written = snprintf(buffer, BUFFER_MAX, "%d", pin);
+	write(fd, buffer, bytes_written);
+	close(fd);
+	return(0);
+}
 
 ////////////////////////////////////////////////////////////////////////
 ///////////////////Fonction socket /////////////////////////////////////
@@ -78,35 +168,39 @@ void signals_handler(int signal_number)
 ////////////////////////////////////////////////////////////////////////
 
 int photo()
-{
+{	
+	
+	system("./v4l2grab -o image.jpg");
 	return 1;
 }
-
 
 int sendPhoto(SOCKET sockCom, fd_set fd)
 {
 	char byte;
 	char rep;
     FILE *fjpg = fopen("image.jpg","rb");
+    int taille = 0;
     if (fjpg!=NULL) {
         while (feof(fjpg) == 0)
         {
-            fread (&byte, sizeof(char),1, fjpg);
-            send(sockCom, &byte, sizeof(char),0);
-            int test = 0;
-            while (test == 0){
-            	if(FD_ISSET(sockCom, &fd))
-				{	
-            		recv(sockCom, &rep, sizeof(char),0);
-            		test = 1;
-            	}
-            }	
-            
-        } 
-        fclose(fjpg);  
-        char * end = 'end';
-        send(sockCom, &end, sizeof(end),0);
-        int test = 0;
+			fread (&byte, sizeof(char),1, fjpg);
+			taille++;
+		}
+		char *msg = {NULL};
+		sprintf(msg,"$%d$",taille);
+		send(sockCom, msg, sizeof(msg),0);
+		printf(" taille : %s \n",msg);
+		fseek( fjpg, 0, SEEK_SET );
+		char buff[taille];
+		int compteur = 0;
+		while (feof(fjpg) == 0)
+        {
+			fread (&byte, sizeof(char),1, fjpg);
+			buff[compteur] = byte;
+			compteur++;
+		}
+		
+		int test = 0;
         while (test == 0)
         {
 	        if(FD_ISSET(sockCom, &fd))
@@ -115,19 +209,28 @@ int sendPhoto(SOCKET sockCom, fd_set fd)
 	    		test = 1;
 	    	}
 	   	}
-    	printf("end transfert \n");
-    } else {
-        printf("Erreur ouverture\n");
-    }
-    return 0;
+	   	
+	   	send(sockCom, buff, sizeof(buff),0);
+	   	while (test == 0)
+        {
+	        if(FD_ISSET(sockCom, &fd))
+			{	
+	    		recv(sockCom, &rep, sizeof(char),0);
+	    		test = 1;
+	    	}
+	   	}
+	}
+	
+	
+	return 1;
+	
+	
 }
-
-
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 
 
-void app(){
+int app(){
 	
 	struct sigaction action;
     action.sa_handler = signals_handler;
@@ -143,26 +246,24 @@ void app(){
 	size_t sinsize = sizeof csin;
 	
 	
-	//sockCom = accept(socketConnexion, (SOCKADDR *)&csin, &sinsize);
-	
-
-	/*if(sockCom == SOCKET_ERROR)
-	{
-		perror("accept()");
-	}
-	else
-	{
-		printf("Connexion OK\n");
-		Client = 1;
-		
-	}*/
-	
 	fd_set fd;
 	int max = socketConnexion;
 	
 	struct timeval tv;
 	tv.tv_sec = 2;
 	tv.tv_usec = 0;
+	
+	
+	if (-1 == GPIOExport(PIN))
+	{
+		return(1);
+	}
+		
+	if (-1 == GPIODirection(PIN, OUT))
+	{
+		return(2);
+	}
+	
 	
 	
 	while(1)
@@ -214,6 +315,7 @@ void app(){
 		if (Client == 1) 
 		{
 			
+			GPIOWrite(PIN,1);
 			if(FD_ISSET(sockCom, &fd))
 			{
 				
@@ -224,7 +326,7 @@ void app(){
 				printf(" demande : %d \n", demande == 49);
 
 
-				if (demande == NULL)
+				if (demande == 0)
 				{
 					printf(" Client disconnected \n");
 					end_connection(sockCom);
@@ -241,10 +343,16 @@ void app(){
 				}
 					
 			}
+		}
+		else
+		{
+			GPIOWrite(PIN,0);
 		}	
 		
 	}
 	
+	if (-1 == GPIOUnexport(PIN))
+		return(4);
 	end_connection(sockCom);
 	end_connection(socketConnexion);
 	
