@@ -257,12 +257,12 @@ int app(){
 	tv.tv_usec = 0;
 	
 	
-	if (-1 == GPIOExport(PIN))
+	if (-1 == GPIOExport(PIN1) || -1 == GPIOExport(PIN2))
 	{
 		return(1);
 	}
 		
-	if (-1 == GPIODirection(PIN, OUT))
+	if (-1 == GPIODirection(PIN1, OUT) || -1 == GPIODirection(PIN2, OUT))
 	{
 		return(2);
 	}
@@ -318,7 +318,7 @@ int app(){
 		if (Client == 1) 
 		{
 			
-			GPIOWrite(PIN,1);
+			GPIOWrite(PIN1,1);
 			if(FD_ISSET(sockCom, &fd))
 			{
 				
@@ -338,11 +338,13 @@ int app(){
 				
 				if (demande == '1')
 				{
+					GPIOWrite(PIN2,1);
 					char rep = '1';
 					printf("transfert begins\n");
 					send(sockCom, &rep, sizeof(char),0);	
 					photo();
 					sendPhoto(sockCom,fd);
+					GPIOWrite(PIN2,0);
 						
 				}
 					
@@ -350,12 +352,12 @@ int app(){
 		}
 		else
 		{
-			GPIOWrite(PIN,0);
+			GPIOWrite(PIN1,0);
 		}	
 		
 	}
 	
-	if (-1 == GPIOUnexport(PIN))
+	if (-1 == GPIOUnexport(PIN1) || -1 == GPIODirection(PIN2, OUT))
 		return(4);
 	end_connection(sockCom);
 	end_connection(socketConnexion);

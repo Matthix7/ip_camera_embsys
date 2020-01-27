@@ -21,6 +21,7 @@ typedef struct in_addr IN_ADDR;
 
 #define LOW  0
 #define HIGH 1
-#define PIN  24 /* P1-18 */
+#define PIN1  24 /* P1-18 */
+#define PIN2  23 /* P1-16 */
 
 #define BUF_SIZE	1024
