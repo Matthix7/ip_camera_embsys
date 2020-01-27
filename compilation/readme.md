@@ -22,8 +22,8 @@ La commande finale est donc ``./configure --host=arm-linux``
 Commenter la ligne ``#undef malloc`` dans config.h.in
 
 Taper la ligne de commande ``make clean`` pour supprimer l'ancien début de configuration
-Relancer le ``./configure --host=arm-linux``
-Faire un make -> la compilation s'effectue sans accros.
+Relancer le ``./configure --host=arm-linux``.
+Faire un make : la compilation s'effectue sans accros.
 
 ### Compilation de serveur.c
 

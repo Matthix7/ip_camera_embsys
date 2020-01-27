@@ -171,6 +171,9 @@ int photo()
 {	
 	
 	system("./v4l2grab -o image.jpeg");
+	printf("je dors\n");
+	sleep(1);
+	printf("je reveil\n");
 	return 1;
 }
 
@@ -186,9 +189,9 @@ int sendPhoto(SOCKET sockCom, fd_set fd)
 			fread (&byte, sizeof(char),1, fjpg);
 			taille++;
 		}
-		char *msg = {NULL};
+		//char *msg = {NULL};
+		char msg[30] = " ";
 		sprintf(msg,"$%d$",taille);
-		printf(" taille : %s \n",msg);
 		send(sockCom, msg, sizeof(msg),0);
 		fseek( fjpg, 0, SEEK_SET );
 		char buff[taille];
