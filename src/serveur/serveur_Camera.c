@@ -257,12 +257,12 @@ int app(){
 	tv.tv_usec = 0;
 	
 	
-	if (-1 == GPIOExport(PIN1) || -1 == GPIOExport(PIN2))
+	if (-1 == GPIOExport(PIN1)||-1 == GPIOExport(PIN2))
 	{
 		return(1);
 	}
 		
-	if (-1 == GPIODirection(PIN1, OUT) || -1 == GPIODirection(PIN2, OUT))
+	if (-1 == GPIODirection(PIN1, OUT)||-1 == GPIODirection(PIN2, OUT))
 	{
 		return(2);
 	}
@@ -357,7 +357,7 @@ int app(){
 		
 	}
 	
-	if (-1 == GPIOUnexport(PIN1) || -1 == GPIODirection(PIN2, OUT))
+	if (-1 == GPIOUnexport(PIN1)||-1 == GPIODirection(PIN2, OUT))
 		return(4);
 	end_connection(sockCom);
 	end_connection(socketConnexion);
