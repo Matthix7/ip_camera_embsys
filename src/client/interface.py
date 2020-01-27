@@ -7,6 +7,7 @@ Created on Tue Jan  7 10:06:41 2020
 from tkinter import Label, Button, Frame, BOTH, Canvas, Tk, StringVar, Entry
 from PIL import Image, ImageTk  
 import socket
+from numpy.random import randint
 
 class Interface(Frame):
     
@@ -52,7 +53,10 @@ class Interface(Frame):
         
         
     def chargerImage(self): 
-        img=Image.open("ENSTAVENGERS.png") 
+        images = ["ENSTAVENGERS.png", "team.jpg", "montage.jpg"]
+        index_image = randint(len(images))
+        images = ["ENSTAVENGERS.png", "team.jpg", "montage.jpg"]
+        img=Image.open("Ads/"+images[index_image]) 
         img = img.resize((self.size[0], self.size[1]))
         photo = ImageTk.PhotoImage(img) 
         self.dicimg['img1'] = photo        
@@ -108,16 +112,19 @@ class Interface(Frame):
                 image_size_bytes = connection.recv(1024).split(b'$')[1]
 #                print(image_size_bytes)
                 image_size = eval(image_size_bytes)
+                size_downloaded = 0
                 
                 print("Image size = ", image_size)
                 confirmation = b'1'
                 connection.send(confirmation)  
                 
-                received = connection.recv(image_size)
-                outfile.write(received)
+                while size_downloaded < image_size:
+                    received = connection.recv(1024)
+                    size_downloaded += len(received)
+                    outfile.write(received)
                         
                         
-                print("Transfert finished !")
+                print("Transfert finished ! ", size_downloaded)
                 outfile.close()
                 
                 
