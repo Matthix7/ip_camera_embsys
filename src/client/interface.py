@@ -79,10 +79,10 @@ class Interface(Frame):
             msg_recu = connexion_avec_serveur.recv(1024).decode()            
             
             if msg_recu != "1":
-                print("Le serveur a refusé la connexion: déjà occupé.")
+                print("Connection refused by the server: already in use.")
                 return None
             else:
-                print("Connexion établie avec le serveur sur le port {}".format(port))
+                print("Connection established on port {}".format(port))
                 self.connection = connexion_avec_serveur
                 self.connected = True
                 return self.connection
