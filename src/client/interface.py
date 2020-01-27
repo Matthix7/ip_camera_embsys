@@ -40,7 +40,7 @@ class Interface(Frame):
                                 command=self.aquisition_command, bg = 'red')
         self.aquisition_button.pack(side="bottom")
         
-        self.load_button = Button(self, text="Load", padx=26, pady=15, 
+        self.load_button = Button(self, text="Advert", padx=26, pady=15, 
                                 command=self.chargerImage, bg = 'green')
         self.load_button.pack(side="bottom")
         
@@ -94,30 +94,38 @@ class Interface(Frame):
         connection = self.get_connection()
         
         if connection is not None:
-            msg_a_envoyer = "1" 
-            msg_a_envoyer = msg_a_envoyer.encode()
-            connection.send(msg_a_envoyer)    
+            demand = b'1' 
+            connection.send(demand)    
             print("Sent acquisition command...")
-            msg_recu = connection.recv(1024).decode()
-            print(msg_recu)
             
-            if msg_recu == "1":
-                outfile = open('test.jpg', 'wb')
+            msg_recu = connection.recv(1).decode()
+#            print("Conf demande: ", msg_recu)
+            
+            if msg_recu == "1": # Le serveur accepte le transfert
+                outfile = open('current_frame.jpg', 'wb')
                 print("Beginning transfert...")
-                while True:
-                    byte = connection.recv(1024)
-                    connection.send("2".encode())  
-                    print(byte)
-                    
-#                    if byte == b'0':  # Reste à trouver un truc pour mettre fin
-#                        break
-#                    else:
-                    outfile.write(byte)
+                
+                image_size_bytes = connection.recv(1024).split(b'$')[1]
+#                print(image_size_bytes)
+                image_size = eval(image_size_bytes)
+                
+                print("Image size = ", image_size)
+                confirmation = b'1'
+                connection.send(confirmation)  
+                
+                received = connection.recv(image_size)
+                outfile.write(received)
                         
-                    
                         
                 print("Transfert finished !")
                 outfile.close()
+                
+                
+                img=Image.open("current_frame.jpg") 
+                img = img.resize((self.size[0], self.size[1]))
+                photo = ImageTk.PhotoImage(img) 
+                self.dicimg['img1'] = photo        
+                _ = self.cadre.create_image(self.size[0]//2,self.size[1]//2,image=photo)
                     
         
         
