@@ -1,6 +1,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <jpeglib.h>
+#include <jerror.h>
 #include <errno.h>
 #include <string.h>
 #include <signal.h>
@@ -81,6 +83,46 @@ int photo()
 }
 
 
+int sendPhoto(SOCKET sockCom, fd_set fd)
+{
+	char byte;
+	char rep;
+    FILE *fjpg = fopen("image.jpg","rb");
+    if (fjpg!=NULL) {
+        while (feof(fjpg) == 0)
+        {
+            fread (&byte, sizeof(char),1, fjpg);
+            send(sockCom, &byte, sizeof(char),0);
+            int test = 0;
+            while (test == 0){
+            	if(FD_ISSET(sockCom, &fd))
+				{	
+            		recv(sockCom, &rep, sizeof(char),0);
+            		test = 1;
+            	}
+            }	
+            
+        } 
+        fclose(fjpg);  
+        char * end = 'end';
+        send(sockCom, &end, sizeof(end),0);
+        int test = 0;
+        while (test == 0)
+        {
+	        if(FD_ISSET(sockCom, &fd))
+			{	
+	    		recv(sockCom, &rep, sizeof(char),0);
+	    		test = 1;
+	    	}
+	   	}
+    	printf("end transfert \n");
+    } else {
+        printf("Erreur ouverture\n");
+    }
+    return 0;
+}
+
+
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 
@@ -101,8 +143,10 @@ void app(){
 	size_t sinsize = sizeof csin;
 	
 	
-	sockCom = accept(socketConnexion, (SOCKADDR *)&csin, &sinsize);
-	if(sockCom == SOCKET_ERROR)
+	//sockCom = accept(socketConnexion, (SOCKADDR *)&csin, &sinsize);
+	
+
+	/*if(sockCom == SOCKET_ERROR)
 	{
 		perror("accept()");
 	}
@@ -111,7 +155,7 @@ void app(){
 		printf("Connexion OK\n");
 		Client = 1;
 		
-	}
+	}*/
 	
 	fd_set fd;
 	int max = socketConnexion;
@@ -143,7 +187,7 @@ void app(){
 
 		if (FD_ISSET(socketConnexion,&fd))
 		{
-			int rep = 0;
+			char rep = '0';
 			SOCKET sockComTest = accept(socketConnexion, (SOCKADDR *)&csin, &sinsize);
 			printf(" New connection \n");
 			//Si un client n'est pas present on l'accepte (rep 1) sinon 
@@ -151,15 +195,15 @@ void app(){
 			if (Client == 0)
 			{
 				printf("New Client \n");
-				rep = 1;
-				send(sockComTest, &rep, sizeof(int),0);
+				rep = '1';
+				send(sockComTest, &rep, sizeof(char),0);
 				Client =1;
 				sockCom = sockComTest;
 			}
 			else 
 			{
 				printf("Client refused \n");
-				send(sockComTest, &rep, sizeof(int),0);
+				send(sockComTest, &rep, sizeof(char),0);
 				end_connection(sockComTest);
 			}
 			
@@ -172,14 +216,13 @@ void app(){
 			
 			if(FD_ISSET(sockCom, &fd))
 			{
+				
 				printf("newMessage \n");
-				int rep = 1;
 				char demande = 0;
 				recv(sockCom, &demande, sizeof(char),0);
-				//send(sockCom, &rep, sizeof(int),0);		
 
+				printf(" demande : %d \n", demande == 49);
 
-				printf(" demande : %d\n", demande);
 
 				if (demande == NULL)
 				{
@@ -190,8 +233,11 @@ void app(){
 				
 				if (demande == '1')
 				{
-					int img = photo();
-					send(sockCom, &rep, sizeof(int),0);		
+					char rep = '1';
+					printf("transfert begins\n");
+					send(sockCom, &rep, sizeof(char),0);	
+					sendPhoto(sockCom,fd);
+						
 				}
 					
 			}
