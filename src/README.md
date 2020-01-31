@@ -18,7 +18,9 @@ N'oubliez pas de bien renseigner l'adresse IP du serveur dans la barre de texte 
 
 ## Serveur
 
-Le dossier serveur contient le code nécessaire à la compilation du serveur pour la raspberry PI.
-Le serveur est capable d'accueillir un client à la fois, tant que celui-ci ne s'est pas déconnecté il est impossible pour un 2ème client d'y accéder. Le serveur se lance au démarrage de la raspberry PI sur le port 12800.
+Le dossier serveur contient le code nécessaire à la création du serveur pour la raspberry PI.
+Pourle compiler il faut suivre la procédure dans le dossier compilation.
 
-Lorsqu'un client est connecté, la LED branchée sur le pin 24 s'allume.
+Une fois lancé sur la raspberry PI le serveur est capable d'accueillir un client à la fois, tant que celui-ci ne s'est pas déconnecté il est impossible pour un 2ème client d'y accéder. Le serveur se lance sur le port 12800.
+
+Lorsqu'un client est connecté, la LED branchée sur le pin GPIO 24 s'allume et lorsqu'une photo est en train d'être prise puis envoyé la LED sur le pin GPIO 23 s'allume.
