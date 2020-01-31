@@ -4,13 +4,13 @@ Groupe Bouveron Matthieu, Courjaud Alexandre, Jegat Corentin, Musellec Yann
 
 ## Compilation
 
-Le readme associé se trouve [ici](compilation/readme.md)
+Le readme associé se trouve [ici](compilation/readme.md).
 
 
 
 
 ## Guide utilisateur
-Le readme associé se trouve [ici](src/README.md)  
+Le readme associé se trouve [ici](src/README.md).
 
 L'interface pour la visualisation du champ de vision de la caméra et la sauvegarde des images est codée sous *Python3* et utilise les librairies *Tkinter* et *Pillow*. L'utilisation de cette interface requiert donc l'installation de ces librairies:
 ```
