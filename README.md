@@ -29,7 +29,7 @@ Récupérer l'image sdcard.img
 sudo docker cp <dockerID>:/root/buildroot-precompiled-2017.08/output/images/sdcard.img .
 ```
 
-Puis la mettre sur la carte sd avec la commande dd. Enfin ajouter ou remplacer les fichiers `start_x.elf`, `fixup_x.dat` et `config.txt` (présent dans le dossier buildImage [ici](buildimage)) sur la 1ère partition de la carte SD
+Puis la mettre sur la carte sd avec la commande dd. Enfin ajouter ou remplacer les fichiers `start_x.elf`, `fixup_x.dat` et `config.txt` (présent dans le dossier buildImage [ici](buildImage)) sur la 1ère partition de la carte SD
 
 
 
